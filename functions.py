@@ -15,7 +15,7 @@ from datetime import datetime
 def load_file(path):
     try:
         if os.path.exists(path):
-            return pd.read_excel(path, skiprows=1)
+            return pd.read_excel(path, skiprows=1, engine='openpyxl')
         else:
             st.error(f"File {path} non trovato, per favore carica una lista quotazioni")
             return pd.DataFrame()  # Return empty DataFrame if file not found
@@ -27,7 +27,7 @@ def create_datafame(stats_path, prices_path, use_custom, uploaded_file):
     # Load data files
     stats_df = load_file(stats_path)
     if use_custom:
-        prices_df = pd.read_excel(uploaded_file, skiprows=1)
+        prices_df = pd.read_excel(uploaded_file, skiprows=1, engine='openpyxl')
     else:
         prices_df = load_file(prices_path)
 
