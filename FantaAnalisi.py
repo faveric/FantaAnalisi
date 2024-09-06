@@ -57,7 +57,7 @@ L'idea è che ogni partecipante cercherà di acquistare i giocatori con lo **SCO
 I calciatori in lista eccedenti il numero di slot previsto per ogni ruolo vengono convenzionalmente assegnati allo slot n°99.
 """)
 
-st.session_state['num_participants'] = st.number_input("Numero di Partecipanti Asta", min_value=1, value=10)
+st.session_state['num_participants'] = st.number_input("Numero di Partecipanti Asta", min_value=2, value=8)
 
 st.write("""
 Lo SCORE viene calcolato come media pesata dei valori normalizzati dell quotazione attuale, della FantaMedia e del numero di presenze.
@@ -108,7 +108,9 @@ role = st.selectbox('Ruolo', ('P', 'D', 'C', 'A'))
 slot_num = st.selectbox('Slot', df_with_slots[df_with_slots['R']==role]['SLOT'].unique())
 
 selected_slot = df_with_slots[(df_with_slots['R']==role) & df_with_slots['SLOT'].isin([slot_num])]
-show_summary_players(selected_slot, 'Nome')
+max_vals = df_with_slots[(df_with_slots['R']==role)][["SLOT", "SCORE", "Qt.A", "Mv", "Fm", "Gf", "Ass", "Pv"]].max()
+print(max_vals)
+show_summary_players(selected_slot, 'Nome', max_vals)
 
 # Player Comparison
 st.header("Confronto Giocatori", divider='red')
@@ -119,7 +121,8 @@ player1_data = st.session_state['df'][st.session_state['df']["Nome"] == player1]
 player2_data = st.session_state['df'][st.session_state['df']["Nome"] == player2]
 players_confronto = st.session_state['df'][st.session_state['df']["Nome"].isin([player1, player2])]
 
-show_summary_players(players_confronto, 'Nome')
+max_vals_confronto = df_with_slots[["SLOT", "SCORE", "Qt.A", "Mv", "Fm", "Gf", "Ass", "Pv"]].max()
+show_summary_players(players_confronto, 'Nome', max_vals_confronto)
 
 if st.session_state['use_custom']:
     st.sidebar.write(f"File quotazioni aggiornato manualmente in questa sessione.")

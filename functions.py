@@ -89,9 +89,17 @@ def reset_quotazioni():
     st.session_state['use_custom'] = False
 
 
-def create_radar_chart(df, legend_column):
+def create_radar_chart(df, legend_column, max_vals=pd.DataFrame()):
+    # Identify max values
+    if max_vals.empty:
+        max_vals = df.max()
+
     # Identify the categories for the radar chart
-    categories = [col for col in df.columns if ((col != 'index') and (col != 'Nome') and (col != legend_column))]
+    categories = [col for col in df.columns if ((col != 'index') and
+                                                (col != 'Nome') and
+                                                (col != 'SLOT') and
+                                                (col != 'SCORE') and
+                                                (col != legend_column))]
 
     # Extract colors from the 'Reds' colormap
     colormap = plt.get_cmap('Reds')
@@ -105,7 +113,7 @@ def create_radar_chart(df, legend_column):
     # Normalize data
     df_normalized = df.copy()
     for col in categories:
-        max_value = df[col].max()
+        max_value = max_vals[col] #df[col].max()
         df_normalized[col] = df[col] / max_value if max_value != 0 else df[col]
 
     for idx, element in enumerate(df.index):
@@ -144,14 +152,14 @@ def create_radar_chart(df, legend_column):
 
     return fig
 
-def show_summary(df, legend_column):
+def show_summary(df, legend_column, max_vals=pd.DataFrame()):
     cols = st.columns(2, vertical_alignment='center')
     with cols[0]:
         st.dataframe(df.style.background_gradient(cmap='Reds', gmap=df['SCORE']))
     with cols[1]:
-        st.plotly_chart(create_radar_chart(df, legend_column), use_container_width=True)
+        st.plotly_chart(create_radar_chart(df, legend_column, max_vals), use_container_width=True)
 
-def show_summary_players(df, legend_column):
+def show_summary_players(df, legend_column, max_vals=pd.DataFrame()):
     df_subset = df[["SLOT", "SCORE", "Nome", "Qt.A", "Mv", "Fm", "Gf", "Ass", "Pv"]].copy()
     st.dataframe(df.style.background_gradient(cmap='Reds', gmap=df['SCORE']))
-    st.plotly_chart(create_radar_chart(df_subset, legend_column), use_container_width=True)
+    st.plotly_chart(create_radar_chart(df_subset, legend_column, max_vals), use_container_width=True)
