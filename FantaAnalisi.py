@@ -124,6 +124,9 @@ players_confronto = st.session_state['df'][st.session_state['df']["Nome"].isin([
 max_vals_confronto = df_with_slots[["SLOT", "SCORE", "Qt.A", "Mv", "Fm", "Gf", "Ass", "Pv"]].max()
 show_summary_players(players_confronto, 'Nome', max_vals_confronto)
 
+player_description(player1_data)
+player_description(player2_data)
+
 if st.session_state['use_custom']:
     st.sidebar.write(f"File quotazioni aggiornato manualmente in questa sessione.")
 else:

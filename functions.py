@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from datetime import datetime
 # import seaborn as sns
+import requests
+from bs4 import BeautifulSoup
+
 
 @st.cache_data
 @st.cache_resource
@@ -163,3 +166,40 @@ def show_summary_players(df, legend_column, max_vals=pd.DataFrame()):
     df_subset = df[["SLOT", "SCORE", "Nome", "Qt.A", "Mv", "Fm", "Gf", "Ass", "Pv"]].copy()
     st.dataframe(df.style.background_gradient(cmap='Reds', gmap=df['SCORE']))
     st.plotly_chart(create_radar_chart(df_subset, legend_column, max_vals), use_container_width=True)
+
+def player_description(player_data):
+    # URL of the webpage
+    team = player_data['Squadra'].iloc[0]
+    id = player_data.index[0]
+    st.subheader(f"{player_data['Nome'].iloc[0]}")
+    url = f"https://www.fantacalcio.it/serie-a/squadre/{team}/{team}/{id}"
+
+    # Send an HTTP request to the website
+    response = requests.get(url)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the HTML content
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Extract the player description section by its ID
+        # Extract the player description section by its ID
+        description_section = soup.find('section', id='player-description')
+
+        # Extract the paragraphs inside the section if it exists
+        if description_section:
+            # Extract all <p> tags inside the description section (ignoring empty or irrelevant ones)
+            paragraphs = description_section.find_all('p')
+
+            # Filter out paragraphs with text only, ignore empty or spaces-only paragraphs
+            #description_text = '\n'.join([p.get_text().strip() for p in paragraphs if p.get_text().strip()])
+            for p in paragraphs:
+                text = p.get_text().strip()
+                if text:
+                    st.write(p.get_text().strip())
+
+        # Output the extracted text
+
+        #st.write(description_text)
+    else:
+        st.write(f"Failed to retrieve content. Status code: {response.status_code}")
