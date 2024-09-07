@@ -3,6 +3,7 @@
 # import os
 # import matplotlib.pyplot as plt
 # import seaborn as sns
+
 from functions import *
 
 st.set_page_config(
@@ -14,8 +15,14 @@ st.set_page_config(
 data_dir = "./Data"
 prices_path = os.path.join(data_dir, "prices.xlsx")
 stats_path = os.path.join(data_dir, "stats.xlsx")
+desc_path = os.path.join(data_dir, "descriptions.csv")
 
-# @st.cache_data
+@st.cache_data
+def load_descriptions(path):
+    descriptions = pd.read_csv(path)
+    return descriptions
+
+descriptions_df = load_descriptions(desc_path)
 # @st.cache_resource
 
 # Title
@@ -109,7 +116,6 @@ slot_num = st.selectbox('Slot', df_with_slots[df_with_slots['R']==role]['SLOT'].
 
 selected_slot = df_with_slots[(df_with_slots['R']==role) & df_with_slots['SLOT'].isin([slot_num])]
 max_vals = df_with_slots[(df_with_slots['R']==role)][["SLOT", "SCORE", "Qt.A", "Mv", "Fm", "Gf", "Ass", "Pv"]].max()
-print(max_vals)
 show_summary_players(selected_slot, 'Nome', max_vals)
 
 # Player Comparison
@@ -124,8 +130,11 @@ players_confronto = st.session_state['df'][st.session_state['df']["Nome"].isin([
 max_vals_confronto = df_with_slots[["SLOT", "SCORE", "Qt.A", "Mv", "Fm", "Gf", "Ass", "Pv"]].max()
 show_summary_players(players_confronto, 'Nome', max_vals_confronto)
 
-player_description(player1_data)
-player_description(player2_data)
+
+st.subheader(f"{player1_data['Nome'].iloc[0]}")
+player_description(descriptions_df, player1_data)
+st.subheader(f"{player2_data['Nome'].iloc[0]}")
+player_description(descriptions_df, player2_data)
 
 if st.session_state['use_custom']:
     st.sidebar.write(f"File quotazioni aggiornato manualmente in questa sessione.")

@@ -9,6 +9,7 @@ from datetime import datetime
 # import seaborn as sns
 import requests
 from bs4 import BeautifulSoup
+import re
 
 
 @st.cache_data
@@ -167,7 +168,56 @@ def show_summary_players(df, legend_column, max_vals=pd.DataFrame()):
     st.dataframe(df.style.background_gradient(cmap='Reds', gmap=df['SCORE']))
     st.plotly_chart(create_radar_chart(df_subset, legend_column, max_vals), use_container_width=True)
 
-def player_description(player_data):
+def player_description_webfetch(player_data):
+    # URL of the webpage
+    teams = player_data['Squadra']
+    ids = player_data.index
+
+    # Create a dictionary of URLs
+    urls = {id: f"https://www.fantacalcio.it/serie-a/squadre/{team}/{team}/{id}" for id, team in zip(ids, teams)}
+
+    # Dictionary to store descriptions
+    descriptions = {}
+
+    # Send HTTP requests and parse the content for each URL
+    for id, url in urls.items():
+        try:
+            # Send an HTTP request to the website
+            response = requests.get(url)
+
+            # Check if the request was successful
+            if response.status_code == 200:
+                # Parse the HTML content
+                soup = BeautifulSoup(response.content, 'html.parser')
+
+                # Extract the player description section by its ID
+                description_section = soup.find('section', id='player-description')
+
+                # Extract the paragraphs inside the section if it exists
+                if description_section:
+                    paragraphs = description_section.find_all('p')
+
+                    # Filter out empty or spaces-only paragraphs
+                    desc = []
+                    for p in paragraphs:
+                        text = p.get_text().strip()
+                        if text:
+                            desc.append(text)
+
+                    # Store the joined description for the current player ID
+                    descriptions[id] = '\n'.join(desc)
+                else:
+                    descriptions[id] = None  # If no description found
+            else:
+                descriptions[id] = None  # If the request failed
+        except Exception as e:
+            descriptions[id] = None  # Handle any exceptions
+
+    # Create a DataFrame with 'Id' as index and 'description' as the column
+    description_df = pd.DataFrame.from_dict(descriptions, orient='index', columns=['description'])
+
+    return description_df
+def player_description_live(player_data):
     # URL of the webpage
     team = player_data['Squadra'].iloc[0]
     id = player_data.index[0]
@@ -203,3 +253,15 @@ def player_description(player_data):
         #st.write(description_text)
     else:
         st.write(f"Failed to retrieve content. Status code: {response.status_code}")
+
+def player_description(descriptions_df, player_data):
+    player_desc = descriptions_df[descriptions_df['Id'] == player_data.index[0].astype('int')]['description'].iloc[0]
+
+    # Split the text based on the section labels
+    sections = re.split(r'(?=Statistiche anno|Gestione al Fantacalcio|Note positive|Note negative)', player_desc)
+
+    # Remove any leading/trailing whitespace from each section
+    sections = [section.strip() for section in sections if section.strip()]
+
+    for sec in sections:
+        st.write(sec)
