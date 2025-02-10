@@ -74,9 +74,9 @@ L'attribuzione dei pesi può essere personalizzata dall'utente.
 
 # Assign weights for slot definition
 weights=st.columns(3)
-st.session_state['weights'][0] = weights[0].number_input('Peso Quotazione Attuale', min_value=0.0, max_value=1.0, value=0.7, step=0.05)
+st.session_state['weights'][0] = weights[0].number_input('Peso Quotazione Attuale', min_value=0.0, max_value=1.0, value=0.75, step=0.05)
 st.session_state['weights'][1] = weights[1].number_input('Peso FMV precedente stagione', min_value=0.0, max_value=1.0, value=0.2, step=0.05)
-st.session_state['weights'][2] = weights[2].number_input('Peso Presenze precedente stagione', min_value=0.0, max_value=1.0, value=0.1, step=0.05)
+st.session_state['weights'][2] = weights[2].number_input('Peso Presenze precedente stagione', min_value=0.0, max_value=1.0, value=0.05, step=0.05)
 if round(sum(st.session_state['weights']),2) != 1.0:
     st.warning('La somma dei pesi deve essere uguale a 1')
 

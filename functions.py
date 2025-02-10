@@ -77,13 +77,13 @@ def create_slots(df, num_participants, slot_counts, weights):
 
 def weight_function(df, weights):
     df_cp=df.copy()
-    max_0 = df_cp['Qt.A'].max()
+    max_0 = df_cp['FVM'].max()
     max_1 = df_cp['Fm'].max()
     max_2 = df_cp['Pv'].max()
     min_0 = df_cp['Qt.A'].min()
     min_1 = df_cp['Fm'].min()
     min_2 = df_cp['Pv'].min()
-    F0 = (df_cp['Qt.A']-min_0)/(max_0-min_0)
+    F0 = (df_cp['FVM']-min_0)/(max_0-min_0)
     F1 = (df_cp['Fm']-min_1)/(max_1-min_1)
     F2 = (df_cp['Pv']-min_2)/(max_2-min_2)
     df_cp.loc[:,'SCORE'] = F0*weights[0] + F1*weights[1] + F2*weights[2]
