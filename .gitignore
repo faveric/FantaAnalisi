@@ -1,0 +1,38 @@
+# File di ambiente con informazioni sensibili
+.env
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# File temporanei
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Dati estratti (file di grandi dimensioni)
+serie_a_data_*.csv
+serie_a_data_*.json
+serie_a_data_*.pkl
+
+# Log files
+*.log
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+
+# Sistema operativo
+*.swp
+*.swo
+*~

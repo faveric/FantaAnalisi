@@ -36,9 +36,9 @@ if 'use_custom' not in st.session_state:
 if 'showall' not in st.session_state:
     st.session_state['showall'] = True
 if 'weights' not in st.session_state:
-    st.session_state['weights'] = [0.7, 0.2, 0.1]
+    st.session_state['weights'] = [0.65, 0.20, 0.15]
 if 'num_participants' not in st.session_state:
-    st.session_state['num_participants'] = 8
+    st.session_state['num_participants'] = 10
 # Define slot counts for each role
 if 'slot_counts' not in st.session_state:
     st.session_state['slot_counts'] = {'P': 3, 'D': 8, 'C': 8, 'A': 6}
@@ -64,7 +64,7 @@ L'idea è che ogni partecipante cercherà di acquistare i giocatori con lo **SCO
 I calciatori in lista eccedenti il numero di slot previsto per ogni ruolo vengono convenzionalmente assegnati allo slot n°99.
 """)
 
-st.session_state['num_participants'] = st.number_input("Numero di Partecipanti Asta", min_value=2, value=8)
+st.session_state['num_participants'] = st.number_input("Numero di Partecipanti Asta", min_value=2, value=10)
 
 st.write("""
 Lo SCORE viene calcolato come media pesata dei valori normalizzati dell quotazione attuale, della FantaMedia e del numero di presenze.
@@ -74,9 +74,9 @@ L'attribuzione dei pesi può essere personalizzata dall'utente.
 
 # Assign weights for slot definition
 weights=st.columns(3)
-st.session_state['weights'][0] = weights[0].number_input('Peso Quotazione Attuale', min_value=0.0, max_value=1.0, value=0.75, step=0.05)
-st.session_state['weights'][1] = weights[1].number_input('Peso FMV precedente stagione', min_value=0.0, max_value=1.0, value=0.2, step=0.05)
-st.session_state['weights'][2] = weights[2].number_input('Peso Presenze precedente stagione', min_value=0.0, max_value=1.0, value=0.05, step=0.05)
+st.session_state['weights'][0] = weights[0].number_input('Peso Quotazione Attuale', min_value=0.0, max_value=1.0, value=0.65, step=0.05)
+st.session_state['weights'][1] = weights[1].number_input('Peso FMV precedente stagione', min_value=0.0, max_value=1.0, value=0.20, step=0.05)
+st.session_state['weights'][2] = weights[2].number_input('Peso Presenze precedente stagione', min_value=0.0, max_value=1.0, value=0.15, step=0.05)
 if round(sum(st.session_state['weights']),2) != 1.0:
     st.warning('La somma dei pesi deve essere uguale a 1')
 
